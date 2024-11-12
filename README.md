@@ -4,7 +4,42 @@ Real-time media stream monitoring and thumbnail generation solution.
 
 ![mediamonit-logo.svg](mediamonit-logo.svg)
 
-# Media Monitor - Struktura projektu
+## Overview
+
+MediaMonit is a professional media monitoring solution that provides real-time status checks, thumbnail generation, and comprehensive logging for various media streams. It supports multiple protocols including RTSP, RTMP, HLS, DASH, and MP4.
+
+## Features
+
+### Core Functionality
+- Real-time stream status monitoring
+- Automatic thumbnail and preview generation
+- Comprehensive request logging system
+- Multi-protocol support
+- Status history and analytics
+- Configurable check intervals
+- RESTful API
+
+### Media Support
+- RTSP (Real Time Streaming Protocol)
+- RTMP (Real Time Messaging Protocol)
+- HLS (HTTP Live Streaming)
+- DASH (Dynamic Adaptive Streaming over HTTP)
+- MP4 (Static video files)
+- Images (JPG, PNG, GIF)
+- Text files and HTML content
+
+### Advanced Features
+- Detailed request logging with metadata
+- Preview generation for media files
+- Preview caching system
+- Text file content preview
+- HTML content preview
+- Custom error messages
+- Webhook notifications
+- Docker support
+- Scalable architecture
+
+## Project Structure
 
 ```
 media-monitor/
@@ -15,7 +50,8 @@ media-monitor/
 │   │   │   ├── mediaService.js
 │   │   │   └── thumbnailService.js
 │   │   └── utils/
-│   │       └── ffmpeg.js
+│   │       ├── ffmpeg.js
+│   │       └── logger.js
 │   ├── Dockerfile
 │   └── package.json
 ├── frontend/
@@ -26,62 +62,23 @@ media-monitor/
 │   └── Dockerfile
 ├── nginx/
 │   └── nginx.conf
+├── logs/
+│   └── requests.log
+├── previews/
+├── thumbnails/
 ├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
 ├── README.md
-└── init.sh
-
+├── CHANGELOG.md
+└── TODO.md
 ```
 
-## Wymagania
+## Requirements
 - Docker
 - Docker Compose
-- Git (opcjonalnie)
-
-## Szybki start
-1. Sklonuj repozytorium
-2. Uruchom `./init.sh`
-3. Otwórz `http://localhost:8080` w przeglądarce
-
-## Porty
-- Frontend: 8080
-- Backend: 3000
-- NGINX: 80 (wewnętrzny)
-
-## Zmienne środowiskowe
-- `BACKEND_PORT`: Port backendu (domyślnie 3000)
-- `FRONTEND_PORT`: Port frontendu (domyślnie 8080)
-- `FFMPEG_PATH`: Ścieżka do FFmpeg (domyślnie /usr/bin/ffmpeg)
-
-## Overview
-
-MediaMonit is a professional media monitoring solution that provides real-time status checks and thumbnail generation for various media streams. It supports multiple protocols including RTSP, RTMP, HLS, DASH, and MP4.
-
-## Features
-
-### Core Functionality
-- Real-time stream status monitoring
-- Automatic thumbnail generation
-- Multi-protocol support
-- Status history and analytics
-- Configurable check intervals
-- RESTful API
-
-### Supported Protocols
-- RTSP (Real Time Streaming Protocol)
-- RTMP (Real Time Messaging Protocol)
-- HLS (HTTP Live Streaming)
-- DASH (Dynamic Adaptive Streaming over HTTP)
-- MP4 (Static video files)
-
-### Additional Features
-- Text file content preview
-- HTML content preview
-- Custom error messages
-- Webhook notifications
-- Docker support
-- Scalable architecture
+- Git (optional)
+- FFmpeg
 
 ## Quick Start
 
@@ -131,6 +128,10 @@ const monitor = new MediaMonitor({
         interval: 1000, // Thumbnail update interval (ms)
         width: 160,     // Thumbnail width
         height: 90      // Thumbnail height
+    },
+    logging: {
+        enabled: true,  // Enable request logging
+        path: './logs/requests.log'  // Log file path
     }
 });
 ```
@@ -149,6 +150,12 @@ Content-Type: application/json
 }
 ```
 
+Response includes:
+- Stream status (active/error)
+- Media metadata
+- Preview URL (if available)
+- Error details (if any)
+
 ### Generate Thumbnail
 
 ```http
@@ -160,6 +167,11 @@ Content-Type: application/json
     "type": "rtmp"
 }
 ```
+
+Response includes:
+- Thumbnail URL
+- Generation status
+- Error details (if any)
 
 ## Development
 
@@ -211,6 +223,17 @@ docker-compose logs -f
 4. Configure SSL
 5. Start application
 
+## Logging System
+
+The application includes a comprehensive logging system that tracks:
+- All incoming requests
+- Request metadata (method, URL, IP, headers)
+- Response times and status codes
+- Media processing operations
+- Error details
+
+Logs are stored in JSON format in the `logs/requests.log` file.
+
 ## Support
 
 - Documentation: [docs.mediamonit.com](https://docs.mediamonit.com)
@@ -220,36 +243,3 @@ docker-compose logs -f
 ## License
 
 MediaMonit is released under the Apache 2 License. See the LICENSE file for details.
-
-
-
-
-# generate.py
-
-skrypt w Pythonie, który przeanalizuje strukturę z Markdown i utworzy odpowiednie pliki i katalogi.
-
-1. Parsuje strukturę katalogów z bloku kodu Markdown
-2. Wyodrębnia zawartość plików z bloków kodu z komentarzami
-3. Tworzy odpowiednie katalogi i pliki w podanej lokalizacji
-
-Aby użyć skryptu:
-
-1. Zapisz powyższy kod jako `generate_structure.py`
-2. Zapisz strukturę projektu w pliku Markdown (np. `structure.md`)
-3. Uruchom skrypt:
-
-```bash
-python generate.py doc.md --output ./test
-```
-
-Skrypt:
-- Utworzy wszystkie katalogi z struktury
-- Utworzy pliki na podstawie bloków kodu z komentarzami
-- Zachowa odpowiednie uprawnienia dla plików wykonywalnych
-- Obsługuje kodowanie UTF-8
-
-Czy chciałbyś, żebym dodał jakieś dodatkowe funkcje do skryptu? Na przykład:
-- Walidację struktury przed utworzeniem
-- Kopię zapasową istniejących plików
-- Interaktywne potwierdzenie nadpisywania
-- Raport z utworzonych plików

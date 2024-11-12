@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MediaMonit - Monitor Mediów</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>MediaMonit - Monitor Mediów</h1>
+
+        <div class="media-links">
+            <div>
+                <a href="rtsp://test1234:test1234@192.168.188.225:554/Preview_01_sub">
+                    Stream RTSP #1
+                </a>
+            </div>
+
+            <div>
+                <a href="rtmp://localhost:9000/stream2">
+                    Stream RTMP #2
+                </a>
+            </div>
+
+            <div>
+                <a href="http://localhost:9000/stream3/playlist.m3u8">
+                    Stream HLS #3
+                </a>
+            </div>
+
+            <div>
+                <a href="http://localhost:9000/stream4/manifest.mpd">
+                    Stream DASH #4
+                </a>
+            </div>
+
+            <div>
+                <a href="http://localhost:9000/media/video.mp4">
+                    Plik MP4 #5
+                </a>
+            </div>
+            <div>
+                <a href="http://localhost:9000/media/watermark.gif">
+                    Plik GIF #6
+                </a>
+            </div>
+            <div>
+                <a href="http://localhost:9000/media/watermark.png">
+                    Plik PNG #7
+                </a>
+            </div>
+            <div>
+                <a href="http://localhost:9000/document.txt">
+                    Plik tekstowy #8
+                </a>
+            </div>
+
+            <div>
+                <a href="http://localhost:9000/mediamonit.md">
+                    Plik Markdown #9
+                </a>
+            </div>
+
+            <div>
+                <a href="http://localhost:9000/index.html">
+                    Strona HTML #10
+                </a>
+            </div>
+        </div>
+
+        <div class="media-grid" id="mediaGrid">
+            <!-- Media cards will be inserted here dynamically -->
+        </div>
+    </div>
+
+    <div id="errorNotification" class="error-notification"></div>
+
+    <!-- Scripts -->
+    <script src="/js/errorReporter.js"></script>
+    <script src="/js/mediaMonitor.js"></script>
+    <script>
+        // Initialize the monitor with debug mode
+        const monitor = new MediaMonitor({
+            interval: 1900,
+            baseUrl: 'http://localhost:3001', // Updated API server URL
+            debug: true
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Raportowania Błędów</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        #errorLog {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .error-entry {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 3px solid #ff4444;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Raportowania Błędów</h1>
+    
+    <div class="button-group">
+        <h3>Symulacja błędów HTTP:</h3>
+        <button onclick="simulateHttpError(404)">Błąd 404</button>
+        <button onclick="simulateHttpError(500)">Błąd 500</button>
+        <button onclick="simulateHttpError(503)">Błąd 503</button>
+    </div>
+
+    <div class="button-group">
+        <h3>Symulacja błędów JavaScript:</h3>
+        <button onclick="simulateJsError()">Błąd JS</button>
+        <button onclick="simulatePromiseError()">Błąd Promise</button>
+        <button onclick="simulateAsyncError()">Błąd Async</button>
+    </div>
+
+    <div id="errorLog">
+        <h3>Log błędów:</h3>
+        <div id="errorEntries"></div>
+    </div>
+
+    <script src="/js/errorReporter.js"></script>
+    <script>
+        // Initialize error reporter
+        const errorReporter = new ErrorReporter({
+            apiEndpoint: '/api/errors',
+            automaticReporting: true,
+            debug: true
+        });
+
+        // Function to add error to the log
+        function addErrorToLog(error) {
+            const errorEntries = document.getElementById('errorEntries');
+            const entry = document.createElement('div');
+            entry.className = 'error-entry';
+            entry.innerHTML = `
+                <strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}<br>
+                <strong>Type:</strong> ${error.type || 'Unknown'}<br>
+                <strong>Message:</strong> ${error.message || 'No message'}<br>
+                ${error.details ? `<strong>Details:</strong> ${JSON.stringify(error.details)}<br>` : ''}
+            `;
+            errorEntries.insertBefore(entry, errorEntries.firstChild);
+        }
+
+        // Simulate HTTP errors
+        async function simulateHttpError(statusCode) {
+            try {
+                const response = await fetch(`/api/non-existent-endpoint`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${statusCode}`);
+                }
+            } catch (error) {
+                addErrorToLog({
+                    type: 'HTTP Error',
+                    message: `${statusCode} - ${error.message}`,
+                    details: { statusCode }
+                });
+            }
+        }
+
+        // Simulate JavaScript error
+        function simulateJsError() {
+            try {
+                nonExistentFunction();
+            } catch (error) {
+                addErrorToLog({
+                    type: 'JavaScript Error',
+                    message: error.message,
+                    details: { stack: error.stack }
+                });
+            }
+        }
+
+        // Simulate Promise error
+        function simulatePromiseError() {
+            new Promise((resolve, reject) => {
+                reject(new Error('Symulowany błąd Promise'));
+            }).catch(error => {
+                addErrorToLog({
+                    type: 'Promise Error',
+                    message: error.message,
+                    details: { stack: error.stack }
+                });
+            });
+        }
+
+        // Simulate Async error
+        async function simulateAsyncError() {
+            try {
+                await new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        reject(new Error('Symulowany błąd asynchroniczny'));
+                    }, 100);
+                });
+            } catch (error) {
+                addErrorToLog({
+                    type: 'Async Error',
+                    message: error.message,
+                    details: { stack: error.stack }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
