@@ -2,7 +2,57 @@
 
 Real-time media stream monitoring and thumbnail generation solution.
 
-![MediaMonit Logo](logo.svg)
+![mediamonit-logo.svg](mediamonit-logo.svg)
+
+# Media Monitor - Struktura projektu
+
+```
+media-monitor/
+├── backend/
+│   ├── src/
+│   │   ├── server.js
+│   │   ├── services/
+│   │   │   ├── mediaService.js
+│   │   │   └── thumbnailService.js
+│   │   └── utils/
+│   │       └── ffmpeg.js
+│   ├── Dockerfile
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── media-monitor.js
+│   │   ├── media-monitor.css
+│   │   └── index.html
+│   └── Dockerfile
+├── nginx/
+│   └── nginx.conf
+├── docker-compose.yml
+├── .env.example
+├── .gitignore
+├── README.md
+└── init.sh
+
+```
+
+## Wymagania
+- Docker
+- Docker Compose
+- Git (opcjonalnie)
+
+## Szybki start
+1. Sklonuj repozytorium
+2. Uruchom `./init.sh`
+3. Otwórz `http://localhost:8080` w przeglądarce
+
+## Porty
+- Frontend: 8080
+- Backend: 3000
+- NGINX: 80 (wewnętrzny)
+
+## Zmienne środowiskowe
+- `BACKEND_PORT`: Port backendu (domyślnie 3000)
+- `FRONTEND_PORT`: Port frontendu (domyślnie 8080)
+- `FFMPEG_PATH`: Ścieżka do FFmpeg (domyślnie /usr/bin/ffmpeg)
 
 ## Overview
 
@@ -170,3 +220,36 @@ docker-compose logs -f
 ## License
 
 MediaMonit is released under the Apache 2 License. See the LICENSE file for details.
+
+
+
+
+
+
+skrypt w Pythonie, który przeanalizuje strukturę z Markdown i utworzy odpowiednie pliki i katalogi.
+
+1. Parsuje strukturę katalogów z bloku kodu Markdown
+2. Wyodrębnia zawartość plików z bloków kodu z komentarzami
+3. Tworzy odpowiednie katalogi i pliki w podanej lokalizacji
+
+Aby użyć skryptu:
+
+1. Zapisz powyższy kod jako `generate_structure.py`
+2. Zapisz strukturę projektu w pliku Markdown (np. `structure.md`)
+3. Uruchom skrypt:
+
+```bash
+python generate.py doc.md --output ./test
+```
+
+Skrypt:
+- Utworzy wszystkie katalogi z struktury
+- Utworzy pliki na podstawie bloków kodu z komentarzami
+- Zachowa odpowiednie uprawnienia dla plików wykonywalnych
+- Obsługuje kodowanie UTF-8
+
+Czy chciałbyś, żebym dodał jakieś dodatkowe funkcje do skryptu? Na przykład:
+- Walidację struktury przed utworzeniem
+- Kopię zapasową istniejących plików
+- Interaktywne potwierdzenie nadpisywania
+- Raport z utworzonych plików

@@ -1,0 +1,31 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - BACKEND_URL=http://localhost:3000
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      - backend
+    networks:
+      - media-monitor-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - thumbnails:/app/thumbnails
+    environment:
+      - FFMPEG_PATH=${FFMPEG_PATH:-/usr/bin/ffmpeg}
+      - NODE_ENV=production
+    networks:
+      - media-monitor-network
+
+networks:
+  media-monitor-network:
+    driver: bridge
+
+volumes:
+  thumbnails:
