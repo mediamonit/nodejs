@@ -5,11 +5,14 @@
   "main": "src/server.js",
   "scripts": {
     "test": "jest",
+    "test:e2e": "jest tests/e2e.test.js",
     "start:api": "node src/server.js",
     "start:frontend": "node src/frontendServer.js",
     "dev:api": "nodemon src/server.js",
     "dev:frontend": "nodemon src/frontendServer.js",
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\""
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
+    "restart": "bash scripts/restart-services.sh",
+    "setup": "cp .env.example .env"
   },
   "keywords": [],
   "author": "",

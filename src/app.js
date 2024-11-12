@@ -28,6 +28,15 @@ app.use('/thumbnails', express.static(process.env.THUMBNAILS_DIR));
 app.use('/previews', express.static(process.env.PREVIEWS_DIR));
 app.use(loggingMiddleware);
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+    });
+});
+
 // Serve static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
