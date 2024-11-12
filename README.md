@@ -224,7 +224,7 @@ MediaMonit is released under the Apache 2 License. See the LICENSE file for deta
 
 
 
-
+# generate.py
 
 skrypt w Pythonie, który przeanalizuje strukturę z Markdown i utworzy odpowiednie pliki i katalogi.
 
