@@ -3,6 +3,60 @@ import re
 import argparse
 from pathlib import Path
 
+DEFAULT_FILENAMES = {
+    'javascript': 'script.js',
+    'js': 'script.js',
+    'python': 'script.py',
+    'py': 'script.py',
+    'css': 'styles.css',
+    'html': 'index.html',
+    'java': 'Main.java',
+    'cpp': 'main.cpp',
+    'c': 'main.c',
+    'sql': 'query.sql',
+    'php': 'index.php',
+    'ruby': 'script.rb',
+    'go': 'main.go',
+    'rust': 'main.rs',
+    'typescript': 'script.ts',
+    'ts': 'script.ts',
+    'yaml': 'config.yml',
+    'yml': 'config.yml',
+    'json': 'config.json',
+    'xml': 'config.xml',
+    'markdown': 'README.md',
+    'md': 'README.md',
+    'bash': 'script.sh',
+    'sh': 'script.sh',
+    'dockerfile': 'Dockerfile'
+}
+
+def extract_filename_from_comments(content):
+    """Wyodrębnia nazwę pliku z różnych typów komentarzy."""
+    # Lista wzorców dla różnych typów komentarzy
+    patterns = [
+        # Komentarze jednoliniowe
+        r'(?:^|\n)//\s*([^\n]*\.[\w]+)',  # JavaScript, C++
+        r'(?:^|\n)#\s*([^\n]*\.[\w]+)',   # Python, Bash, Ruby
+        # Komentarze wieloliniowe
+        r'/\*\s*(.*?\.[\w]+).*?\*/',       # C-style (/* */)
+        r'<!--\s*(.*?\.[\w]+).*?-->',      # HTML/XML
+        r'"""\s*(.*?\.[\w]+).*?"""',       # Python docstring
+        r"'''\s*(.*?\.[\w]+).*?'''",       # Python docstring (pojedyncze cudzysłowy)
+        # Specjalne komentarze
+        r'--\s*([^\n]*\.[\w]+)',          # SQL
+        r'%\s*([^\n]*\.[\w]+)',           # LaTeX
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, content, re.DOTALL)
+        if match:
+            filename = match.group(1).strip()
+            if '.' in filename:  # Upewnij się, że znaleziony tekst zawiera rozszerzenie
+                return filename
+
+    return None
+
 def extract_file_content(markdown_content):
     """Wyodrębnia zawartość plików z bloków kodu w Markdown."""
     # Pattern do znajdowania bloków kodu z określonym językiem i komentarzem
@@ -10,6 +64,7 @@ def extract_file_content(markdown_content):
     matches = re.finditer(pattern, markdown_content, re.DOTALL)
 
     files_content = {}
+    file_counter = {}  # Licznik dla domyślnych nazw plików
 
     for match in matches:
         language = match.group(1)
@@ -17,41 +72,38 @@ def extract_file_content(markdown_content):
         content = match.group(3).strip()
 
         # Ignoruj bloki markdown zawierające strukturę projektu
-        if language == 'markdown':
+        if language == 'markdown' and 'media-monitor/' in content:
             continue
 
         filename = None
 
-        # Sprawdź czy to skrypt bash
-        if language == 'bash':
-            # Szukaj nazwy pliku w pierwszych liniach
-            lines = content.split('\n')
-            for line in lines[:3]:  # Sprawdź pierwsze 3 linie
-                if line.startswith('#') and '.sh' in line:
-                    filename = line.replace('#', '').strip()
-                    break
+        # 1. Sprawdź komentarz nad blokiem kodu
+        if comment and ('.' in comment or '/' in comment):
+            filename = comment.strip()
 
-        # Jeśli nie znaleziono nazwy w skrypcie bash, sprawdź komentarz
-        if not filename and comment:
-            # Typowe rozszerzenia plików
-            file_extensions = ['.yml', '.conf', '.sh', '.example', '.gitignore', 'Dockerfile']
+        # 2. Sprawdź komentarze wewnątrz kodu
+        if not filename:
+            filename = extract_filename_from_comments(content)
 
-            # Sprawdź czy komentarz zawiera ścieżkę pliku
-            if any(ext in comment for ext in file_extensions) or '/' in comment:
-                filename = comment.strip()
-
-        # Dla plaintext sprawdź pierwszą linię
-        elif language == 'plaintext' and content.startswith('#'):
-            first_line = content.split('\n')[0]
-            if '.env.example' in first_line or '.gitignore' in first_line:
-                filename = first_line.replace('# ', '').strip()
-                # Usuń pierwszą linię z zawartości
-                content = '\n'.join(content.split('\n')[1:]).strip()
+        # 3. Użyj domyślnej nazwy pliku dla danego języka
+        if not filename and language:
+            language = language.lower()
+            if language in DEFAULT_FILENAMES:
+                # Dodaj licznik jeśli już istnieje plik z tą nazwą
+                base_name = DEFAULT_FILENAMES[language]
+                if base_name in file_counter:
+                    file_counter[base_name] += 1
+                    name, ext = os.path.splitext(base_name)
+                    filename = f"{name}_{file_counter[base_name]}{ext}"
+                else:
+                    file_counter[base_name] = 0
+                    filename = base_name
 
         if filename:
             files_content[filename] = content
 
     return files_content
+
 
 def create_directory_structure(structure_text):
     """Tworzy listę ścieżek na podstawie tekstowej struktury katalogów."""

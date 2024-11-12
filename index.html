@@ -1,84 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #f8fafc;
-        }
-
-        .logo-container {
-            width: 400px;
-            height: 120px;
-        }
-
-        @keyframes dashOffset {
-            from {
-                stroke-dashoffset: 60;
-            }
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
-
-        .wave-animation {
-            animation: dashOffset 2s linear infinite;
-        }
-    </style>
+    <title>Media Link Monitor - Demo</title>
+    <link rel="stylesheet" href="media-monitor.css">
 </head>
 <body>
-<div class="logo-container">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
-        <!-- Background -->
-        <rect x="0" y="0" width="400" height="120" fill="transparent"/>
+    <h1>Monitor linków multimedialnych</h1>
+    
+    <div class="media-links">
+        <div>
+            <a href="rtsp://example.com/stream1" data-media-type="rtsp">
+                Stream RTSP #1
+            </a>
+        </div>
+        
+        <div>
+            <a href="rtmp://example.com/stream2" data-media-type="rtmp">
+                Stream RTMP #2
+            </a>
+        </div>
+        
+        <div>
+            <a href="https://example.com/stream3/playlist.m3u8" data-media-type="hls">
+                Stream HLS #3
+            </a>
+        </div>
+        
+        <div>
+            <a href="https://example.com/stream4/manifest.mpd" data-media-type="dash">
+                Stream DASH #4
+            </a>
+        </div>
+        
+        <div>
+            <a href="https://example.com/video.mp4" data-media-type="mp4">
+                Plik MP4 #5
+            </a>
+        </div>
 
-        <!-- Main Logo Group -->
-        <g id="mainLogo">
-            <!-- Rounded Square - Monitor Frame -->
-            <rect x="20" y="20"
-                  width="80" height="80"
-                  rx="15" ry="15"
-                  fill="#0f172a"/>
+        <div>
+            <a href="https://example.com/document.txt" data-media-type="text">
+                Plik tekstowy #6
+            </a>
+        </div>
 
-            <!-- Triangle - Play Button -->
-            <path d="M35 85 L85 60 L35 35 Z"
-                  fill="#10b981"/>
+        <div>
+            <a href="https://example.com/page.html" data-media-type="html">
+                Strona HTML #7
+            </a>
+        </div>
+    </div>
 
-            <!-- Monitoring Wave - Uniform amplitude -->
-            <path d="M43 60
-                         C 47 52, 51 68, 55 60
-                         C 59 52, 63 68, 67 60"
-                  fill="none"
-                  stroke="#ffffff"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-dasharray="30"
-                  class="wave-animation"/>
-        </g>
-
-        <!-- Text Elements -->
-        <g id="logoText">
-            <text x="130" y="75"
-                  font-family="Arial, sans-serif"
-                  font-size="42"
-                  font-weight="bold"
-                  fill="#0f172a">Media</text>
-            <text x="250" y="75"
-                  font-family="Arial, sans-serif"
-                  font-size="42"
-                  font-weight="bold"
-                  fill="#10b981">Monit</text>
-        </g>
-
-        <!-- Small Logo Symbol -->
-        <g transform="translate(300, -80) scale(0.4)">
-            <use href="#mainLogo"/>
-        </g>
-    </svg>
-</div>
+    <script src="media-monitor.js"></script>
+    <script>
+        // Inicjalizacja monitora
+        const monitor = new MediaLinkMonitor({
+            interval: 100 // sprawdzanie statusu co 100ms
+        });
+    </script>
 </body>
 </html>
